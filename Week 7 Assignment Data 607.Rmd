@@ -1,0 +1,113 @@
+---
+title: "Week 7 Assignment Data 607"
+author: "Maryluz Cruz"
+date: "10/12/2019"
+output: html_document
+---
+
+## Assignment – Working with XML and JSON in R
+
+Pick three of your favorite books on one of your favorite subjects. At least one of the books should have more
+than one author. For each book, include the title, authors, and two or three other attributes that you find
+interesting.
+
+Take the information that you’ve selected about these three books, and separately create three files which
+store the book’s information in HTML (using an html table), XML, and JSON formats (e.g. “books.html”,
+“books.xml”, and “books.json”). To help you better understand the different file structures, I’d prefer that you
+create each of these files “by hand” unless you’re already very comfortable with the file formats.
+Write R code, using your packages of choice, to load the information from each of the three sources into
+separate R data frames. Are the three data frames identical?
+
+## Download the required packages
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+require(XML)
+require(rvest)
+require(kableExtra)
+require(RCurl)
+require(methods)
+require(xml2)
+require(jsonlite)
+
+```
+
+## HTML
+
+First file to load is the HTML table, we first upload the html file into the GitHub. 
+
+```{r}
+htmlgithub<-getURL("https://raw.githubusercontent.com/Luz917/books.html/master/book.html")
+cat(htmlgithub)
+```
+
+Here we read in the HTML, and convert it to a data.frame. Once we do the data.frame we change the column names to remove the NULL. from each of the column titles. And finally use kableExtra to styalize the table.  
+
+```{r}
+books_html<-readHTMLTable(htmlgithub)
+books_html<-data.frame(books_html)
+colnames(books_html)<-c("Title","Author1","Author2","Pages","Publisher","ISBN")
+kable(books_html) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F, position = "right")
+```
+
+## XML
+
+Next we load the the xml from the github. XML Structure is slightly different from html its the same concept in where you have to open and close for each line with < > </ >. 
+```{r}
+xmlgithub<-getURLContent("https://raw.githubusercontent.com/Luz917/books.xml/master/book.xml")
+cat(xmlgithub)
+```
+
+For XML we have to first parse the data, and after we do that we can change it into a data frame. In the XML we dont have to worry about changing the column names as we had to in html. And again we style the table with kableExtra. 
+
+```{r}
+books_xml<-xmlParse(xmlgithub)
+books_xmldf<-xmlToDataFrame(books_xml)
+kable(books_xmldf) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F, position = "right")
+```
+
+## JSON
+
+Next we upload the JSON file from the github, and read in the document. JSON structure is completely different from XML and HTML, and it is less repetative then the other formats. Its a little bit easier to write. 
+
+```{r}
+jsongithub<-getURLContent("https://raw.githubusercontent.com/Luz917/-books.json/master/books.json")
+cat(jsongithub)
+
+```
+
+When it comes to the JSON you don't have to worry about with just the fromJSON it does it for you. And then again we style the table with kableExtra
+
+```{r}
+books_json<-fromJSON(jsongithub)
+kable(books_json) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F, position = "right")
+
+```
+
+## Are the tables Identical? 
+
+All three tables HTML, XML, and JSON, although the structures of writing code are different the tables are identical.
+
+
+
+
+
+
+## References:
+KableExtra
+https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
+
+HTML Intro
+https://www.w3schools.com/html/html_intro.asp
+
+JSOn Intro
+https://www.w3schools.com/js/js_json_intro.asp
+
+XML Intro
+https://www.w3schools.com/xml/
